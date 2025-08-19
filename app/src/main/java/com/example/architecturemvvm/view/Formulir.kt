@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.Button
 import androidx.compose.material3.DividerDefaults.Thickness
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.VerticalAlignmentLine
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -38,7 +40,7 @@ import com.example.architecturemvvm.R
 @Composable
 fun FormIsian(
     pilihanJK: List<String>,
-    onnSubmitButtonClicked: (MutableList<String>) -> Unit,
+    onSubmitButtonClicked: (MutableList<String>) -> Unit,
     modifier: Modifier = Modifier
 ){
     var txtNama by rememberSaveable { mutableStateOf("") }
@@ -60,26 +62,35 @@ fun FormIsian(
             horizontalAlignment = Alignment.CenterHorizontally)
         {
             OutlinedTextField(
-                value = "",
+                value = txtNama,
                 singleLine = true,
                 modifier = Modifier
                     .padding(top = 20.dp)
                     .width(250.dp),
                 label = {Text(text = "Nama Lengkap")},
-                onValueChange = {},
+                onValueChange = {
+                    txtNama = it
+                },
             )
             HorizontalDivider(modifier = Modifier
                 .padding(20.dp)
                 .width(250.dp), thickness = Thickness, color = Color.Red)
-            Row{
-                jenisK.forEach{
-                    item ->
-                    Row(verticalAlignment = Alignment.CenterVertically){
+            Row {
+                pilihanJK.forEach { item ->
+                    Row(modifier = Modifier.selectable(
+                        selected = txtGender == item,
+                        onClick = {
+                            txtGender = item
+                        }
+                    ),
+                        verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(
-                            selected = false,
-                            onClick = {item}
+                            selected = txtGender == item,
+                            onClick = {
+                                txtGender = item
+                            }
                         )
-                        Text(text = item)
+                        Text(item)
                     }
                 }
             }
@@ -87,18 +98,20 @@ fun FormIsian(
                 .padding(20.dp)
                 .width(250.dp), thickness = Thickness, color = Color.Red)
             OutlinedTextField(
-                value = "",
+                value = txtAlamat,
                 singleLine = true,
                 modifier = Modifier
                     .width(250.dp),
                 label = {Text(text = "Alamat")},
-                onValueChange = {},
+                onValueChange = {
+                    txtAlamat = it
+                },
             )
             Spacer(modifier = Modifier.height(30.dp))
             Button(
                 modifier = Modifier.fillMaxWidth(1f)
                     .padding(all = 25.dp),
-                onClick = OnSubmitBtnClick
+                onClick = { onSubmitButtonClicked(listData) }
             ) {
                 Text(stringResource(id = R.string.submit))
             }
